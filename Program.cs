@@ -1,86 +1,51 @@
-﻿using WaterPark;
+﻿using ConsoleTools;
+using WaterPark;
 
 Turnstile turnstile = new Turnstile();
 
-bool wantContinue = true;
-
-do
+void DeleteCertainTicket()
 {
-    Console.WriteLine("Choose one of the options");
-    Console.WriteLine("1 - Create a new random ticket");
-    Console.WriteLine("2 - Create a new specific ticket");
-    Console.WriteLine("3 - Show tickets");
-    Console.WriteLine("4 - Delete a ticket");
-    Console.WriteLine("5 - Convert to CSV");
-    Console.WriteLine("6 - Delete all tickets");
-    Console.WriteLine("7 - Sort the tickets");
-    Console.WriteLine("8 - End program");
-
-    int option = int.Parse(Console.ReadLine());
-
-    int createTicket = 0;
     int deleteTicket = 0;
 
-    switch (option)
-    {
-        case 1:
-            turnstile.CreateTicket();
-            Console.Clear();
-            break;
-        case 2:
-            Console.WriteLine("Choose a number of the ticket you want to create:");
+    Console.WriteLine("Choose a number of the ticket you want to remove:");
+    deleteTicket = int.Parse(Console.ReadLine());
+    
+    turnstile.DeleteTicket(deleteTicket);
+}
 
-            try
-            {
-                createTicket = int.Parse(Console.ReadLine());
-            }
-            catch
-            {
-                Console.WriteLine("You must input an integer.");
-            }
 
-            turnstile.CreateTicket(createTicket);
-            Console.ReadKey();
-            Console.Clear();
-            break;
 
-        case 3:
-            turnstile.WriteOutTickets();
-            Console.ReadKey();
-            Console.Clear();
-            break;
+var subMenu = new ConsoleMenu(args, level: 1)
+.Add("Delete a ticket", () => DeleteCertainTicket())
+.Add("Delete all tickets", () => turnstile.DeleteTickets())
+.Add("Close 'Deletion options'", ConsoleMenu.Close)
+.Configure(config =>
+{
+    config.Selector = "--> ";
+    //config.EnableFilter = true;
+    config.Title = "Deletion options";
+    config.EnableBreadcrumb = true;
+    config.WriteBreadcrumbAction = titles => Console.WriteLine(string.Join(" / ", titles));
+});
 
-        case 4:
-            Console.WriteLine("Choose a number of the ticket you want to delete");
-            deleteTicket = int.Parse(Console.ReadLine());
-            turnstile.DeleteTicket(deleteTicket);
-            Console.ReadKey();
-            Console.Clear();
-            break;
-        case 5:
-            turnstile.ConvertToCSV();
-            Console.ReadKey();
-            Console.Clear();
-            break;
-        case 6:
-            turnstile.DeleteTickets();
-            Console.WriteLine("All tickets have been removed.");
-            Console.ReadKey();
-            Console.Clear();
-            break;
-        case 7:
-            turnstile.OrderTickets();
-            turnstile.WriteOutTickets();
-            Console.ReadKey();
-            Console.Clear();
-            break;
-        case 8:
-            wantContinue = false;
-            Console.ReadKey();
-            Console.Clear();
-            break;
-        default:
-            Console.WriteLine("Wrong option");
-            break;
-    }
-} while (wantContinue == true);
+
+
+var menu = new ConsoleMenu(args, level: 0)
+  .Add("Create a new random ticket", () => turnstile.CreateTicket())
+  .Add("Create a new specific ticket", () => turnstile.CreateCertainTicket())
+  .Add("Show tickets", () => turnstile.WriteOutTickets())
+  .Add("Sort the tickets", () => turnstile.OrderTickets())
+  .Add("Convert tickets to CSV", () => turnstile.ConvertToCSV())
+  .Add("Ticket deletion options", subMenu.Show)
+  .Add("Close", ConsoleMenu.Close)
+  .Configure(config =>
+  {
+      config.Selector = "--> ";
+      //config.EnableFilter = true;
+      config.Title = "Water park";
+      config.EnableWriteTitle = true;
+      config.EnableBreadcrumb = true;
+  });
+
+menu.Show();
+

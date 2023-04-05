@@ -31,26 +31,47 @@ namespace WaterPark
 
             } while (check == true);
 
-
+            Console.WriteLine("Ticket with number {0} has been created.", randomId);
             Ticket ticket = new Ticket(randomId);
             listOfTickets.Add(ticket);
+            Console.ReadKey();
             return ticket.ID;
         }
 
-        public int CreateTicket(int ticketId)
+        private int CreateTicket(int ticketId)
         {
             if (CheckOfExistingTickets(ticketId) == false)
             {
                 Ticket ticket = new Ticket(ticketId);
                 listOfTickets.Add(ticket);
+                Console.ReadKey();
                 return ticket.ID;
             }
 
             else
             {
                 Console.WriteLine("This ID is already in use.");
+                Console.ReadKey();
                 return -1;
             }
+        }
+
+        public void CreateCertainTicket()
+        {
+            int createTicket = 0;
+            Console.WriteLine("Choose a number of the ticket you want to create:");
+
+            try
+            {
+                createTicket = int.Parse(Console.ReadLine());
+            }
+            catch
+            {
+                Console.WriteLine("You must input an integer.");
+                Console.ReadKey();
+            }
+            CreateTicket(createTicket);
+
         }
 
         private bool CheckOfExistingTickets(int ticketId)
@@ -67,23 +88,38 @@ namespace WaterPark
         {
             foreach (var item in listOfTickets)
                 Console.WriteLine("Ticket number is: " + item.ID);
+            Console.ReadKey();
         }
 
         public void DeleteTicket (int idTicket)
         {
+            bool check = false;
+
             foreach (var item in listOfTickets)
             {
                 if (item.ID == idTicket)
                 {
                     listOfTickets.Remove(item);
+                    check = true;
+                    Console.WriteLine("Ticket with number {0} has been removed.", idTicket);
+                    Console.ReadKey();
                     break;
                 }
             }
+
+            if (check == false)
+            {
+                Console.WriteLine("You must choose an existing ticket number");
+                Console.ReadKey();
+            }
+
         }
 
         public void DeleteTickets()
         {
             listOfTickets.Clear();
+            Console.WriteLine("All tickets have been removed.");
+            Console.ReadKey();
         }
 
         public void ConvertToCSV()
@@ -93,10 +129,12 @@ namespace WaterPark
                 var json = JsonSerializer.Serialize(listOfTickets);
                 Console.WriteLine(json);
                 Console.WriteLine("The process succeeded.");
+                Console.ReadKey();
             }
             catch (Exception e)
             {
                 Console.WriteLine("Something went wrong. Error: " + e);
+                Console.ReadKey();
             }
         }
 
@@ -104,6 +142,7 @@ namespace WaterPark
         {
             var sortedList = listOfTickets.OrderBy(q => q.ID).ToList();
             listOfTickets = sortedList;
+            Console.ReadKey();
         }
     }
 }
